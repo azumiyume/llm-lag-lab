@@ -1,0 +1,23 @@
+# 仮想環境
+llama_env/
+mecab_env/
+
+# VSCode 設定
+.vscode/
+
+# キャッシュ・一時ファイル
+__pycache__/
+*.pyc
+
+# モデルや重いファイル
+*.bin
+*.pt
+*.ckpt
+*.onnx
+*.pkl
+*.npy
+*.npz
+
+# その他
+.DS_Store
+*.log
