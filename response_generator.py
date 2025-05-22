@@ -12,14 +12,16 @@ class RakutenResponder:
             model_path, torch_dtype=torch.float16, device_map="auto"
         )
 
-    def generate(self, context, user_input):
+    def generate(self, context, user_input, meta_info=""):
         prompt = (
             "あなたは親しみやすく丁寧に応答するアシスタントです。\n"
             "提供する情報は信頼性が高く、根拠が明確であるべきです。\n"
             "ここでの対話における研究などは、データベース内にある研究を指すものとします。\n"
             "回答は長すぎず短すぎない簡潔なものを目指してください。\n"
             "質問が曖昧な場合は、必要に応じて確認質問を挿入してください。\n"
-            f"\nユーザーの質問: {user_input}\n関連情報:\n{context}\nアシスタント:"
+            f"\nユーザーの質問: {user_input}"
+            f"\n論文メタ情報:\n{meta_info}"
+            f"\n関連情報:\n{context}\nアシスタント:"
         )
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)

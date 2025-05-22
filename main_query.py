@@ -20,6 +20,7 @@
 from embedding_utils import PlamoEmbedder
 from db_utils import search_similar
 from response_generator import RakutenResponder
+from db_utils import search_similar, get_metadata_by_pdf_name
 
 def main():
     embedder = PlamoEmbedder()
@@ -39,14 +40,30 @@ def main():
 
         if results:
             print("✅ 関連チャンク:")
-            for i, (content, score) in enumerate(results, start=1):
+            for i, (content, score, _) in enumerate(results, start=1):  # pdf_name を含む3要素タプル
                 print(f"{i}. {content[:100]}...（類似度: {score:.2f}）\n")
-            context = "\n".join([content for content, _ in results])
+
+            # ✅ pdf_name を取得（最も類似したチャンクから）
+            top_pdf_name = results[0][2]
+            metadata = get_metadata_by_pdf_name(top_pdf_name)
+            meta_info = "\n".join([f"{k}: {v}" for k, v in metadata.items()])
+            
+            print("メタデータ:")
+            for k, v in metadata.items():
+                print(f"  {k}: {v}")
+
+            # ✅ context の作成（チャンクまとめ）
+            context = "\n".join([content for content, _, _ in results])
+
+            # ✅ 応答生成（meta_info を追加）
+            response = responder.generate(context, query, meta_info)
+
+
+
         else:
             print("❌ 関連情報が見つかりませんでした。")
-            context = ""
+            response = responder.generate("", query)
 
-        response = responder.generate(context, query)
         print(f"アシスタント > {response}\n")
 
 if __name__ == "__main__":
